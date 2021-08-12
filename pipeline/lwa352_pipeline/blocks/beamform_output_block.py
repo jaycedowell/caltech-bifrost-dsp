@@ -201,8 +201,8 @@ class BeamformOutput(Block):
         |               |            |        | channel in this packet.                     |
         +---------------+------------+--------+---------------------------------------------+
         | seq           | uint64     | ADC    | Central sampling time since 1970-01-01      |
-        |               |            | sample | 00:00:00 UTC.                               |
-        |               |            | period |                                             |
+        |               |            | sample | 00:00:00 UTC in units of F-engine FFT       |
+        |               |            | period | windows.                                    |
         +---------------+------------+--------+---------------------------------------------+
         | data          | float      |        | Data payload. Beam powers, in order         |
         |               |            |        | (slowest to fastest) ``Channel x Beam x     |
@@ -295,13 +295,12 @@ class BeamformOutput(Block):
                 prev_time = curr_time
                 idata = ispan.data.view('f32').reshape([self.ntime_gulp, nbeam, nchan, npol**2])
                 start_time = time.time()
-                time_tag = this_gulp_time * samples_per_spectra
                 for beam in range(nbeam):
                     if beam_ips[beam] != '0.0.0.0':
                         idata_beam = idata[:,beam,:,:].copy('system').reshape(self.ntime_gulp, 1, nchan * npol**2)
                         try:
-                            udts[beam].send(desc, this_gulp_time, samples_per_spectra,
-                                            npipeline*nbeam + this_pipeline, 0, idata_beam)
+                            udts[beam].send(desc, this_gulp_time, upstream_acc_len,
+                                            self.pipeline_idx - 1, 0, idata_beam)
                         except Exception as e:
                             self.log.error("BEAM OUTPUT >> Sending error: %s" % (str(e)))
                 stop_time = time.time()
