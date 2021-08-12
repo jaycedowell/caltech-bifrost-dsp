@@ -174,9 +174,9 @@ class BeamformVlbiOutput(Block):
         | chan0         | uint32     |                | Zero-indexed ID of the first frequency      |
         |               |            |                | channel in this packet.                     |
         +---------------+------------+----------------+---------------------------------------------+
-        | seq           | uint64     |                | Zero-indexed spectra number for the spectra |
-        |               |            |                | in this packet. Specified relative to the   |
-        |               |            |                | system synchronization time.                |
+        | seq           | uint64     | FFT window     | Zero-indexed spectra number for the spectra |
+        |               |            | period         | in this packet.  Specified relative to      |
+        |               |            |                | 1970-01-01 00:00:00 UTC.                    |
         +---------------+------------+----------------+---------------------------------------------+
         | data          | float      |                | Data payload. Beam voltages, in order       |
         |               |            |                | (slowest to fastest) ``Channel x Beam x     |
@@ -221,7 +221,7 @@ class BeamformVlbiOutput(Block):
             packet_cnt = 0
             udt = None
             desc = HeaderInfo()
-            desc.set_nchan(system_nchan)
+            desc.set_nchan(nchan)
             desc.set_chan0(chan0)
             desc.set_nsrc(system_nchan // nchan)
             desc.set_tuning(self.pipeline_idx)
@@ -255,7 +255,7 @@ class BeamformVlbiOutput(Block):
                     idata_cpu = idata[:,:,0:(self.npol // npol) * self.nbeam_send].copy(space='system')
                     idata_cpu_r = idata_cpu.reshape(self.ntime_gulp, 1, nchan*self.nbeam_send*(self.npol // npol))
                     try:
-                        udt.send(desc, this_gulp_time, 1, chan0 // nchan, 1, idata_cpu_r)
+                        udt.send(desc, this_gulp_time, 1, self.pipeline_idx - 1, 0, idata_cpu_r)
                     except Exception as e:
                         self.log.error("VLBI OUTPUT >> Sending error: %s" % str(e))
                     stop_time = time.time()
