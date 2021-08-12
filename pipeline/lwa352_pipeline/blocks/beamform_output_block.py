@@ -200,9 +200,9 @@ class BeamformOutput(Block):
         | chan0         | uint32     |        | Zero-indexed ID of the first frequency      |
         |               |            |        | channel in this packet.                     |
         +---------------+------------+--------+---------------------------------------------+
-        | seq           | uint64     | ADC    | Central sampling time since 1970-01-01      |
-        |               |            | sample | 00:00:00 UTC in units of F-engine FFT       |
-        |               |            | period | windows.                                    |
+        | seq           | uint64     | FFT    | Central sampling time since 1970-01-01      |
+        |               |            | window | 00:00:00 UTC.                               |
+        |               |            | period |                                             |
         +---------------+------------+--------+---------------------------------------------+
         | data          | float      |        | Data payload. Beam powers, in order         |
         |               |            |        | (slowest to fastest) ``Channel x Beam x     |
