@@ -261,8 +261,8 @@ class CorrOutputFull(Block):
         | time_tag      | int64      | ADC sample     | Central sampling time since 1970-01-01      |
         |               |            | period         | 00:00:00 UTC.                               |
         +---------------+------------+----------------+---------------------------------------------+
-        | cor_navg      | int16      | TODO: subslots | Integration time.                           |
-        |               |            | doesn't work   |                                             |
+        | cor_navg      | int32      | ADC sample     | Integration time.                           |
+        |               |            | period         |                                             |
         +---------------+------------+----------------+---------------------------------------------+
         | stand_i       | int16      |                | 1-indexed stand number of the unconjugated  |
         |               |            |                | stand.                                      |
