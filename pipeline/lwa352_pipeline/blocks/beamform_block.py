@@ -201,7 +201,7 @@ class Beamform(Block):
         if self.gpu != -1:
             BFSetGPU(self.gpu)
         ## Delays and gains
-        self.cal_gains = np.zeros((nchan, ninput), dtype=np.complex64) #: calibration gains
+        self.cal_gains = np.ones((nchan, ninput), dtype=np.complex64) #: calibration gains
         self.bf_gains = []
         for b in range(nbeam):
             self.bf_gains.append(np.zeros((1,input)), dtype=numpy.float32)) #: raw beamformer gains
