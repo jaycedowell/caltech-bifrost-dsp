@@ -4,13 +4,9 @@ import numpy as np
 from .block_control_base import BlockControl
 
 class BeamformControl(BlockControl):
-    def update_calibration_gains(self, beam_id, input_id, gains):
+    def update_calibration_gains(self, input_id, gains):
         """
         Update calibration gains for a single beam and input.
-
-        :param beam_id: Zero-indexed Beam ID for which coefficients are
-            begin updated.
-        :type beam_id: int
 
         :param input_id: Zero-indexed Input ID for which coefficients are
             begin updated.
@@ -34,10 +30,31 @@ class BeamformControl(BlockControl):
         gains_real[1::2] = gains.imag
         self._send_command(
             coeffs = {
-                'type': 'gains',
+                'type': 'calibration',
                 'input_id': input_id,
-                'beam_id': beam_id,
                 'data': gains_real.tolist(),
+            }
+        )
+
+    def update_gains(self, beam_id, gains):
+        """
+        Update the dipole gains for a single beam.
+        
+        :param beam_id: Zero-indexed Beam ID for which coefficients are
+            begin updated.
+        :type beam_id: int
+
+        :param delays: Real-valued gains to load.  Should be a numpy array with
+            ``nbeam`` entries, where entry ``i`` corresponds to the delay to
+            apply to the ``i``th beamformer input.
+        :type delays: numpy.array
+        
+        """
+        self._send_command(
+            coeffs = {
+                'type': 'gains',
+                'beam_id': beam_id,
+                'data': gains.tolist(),
             }
         )
 
