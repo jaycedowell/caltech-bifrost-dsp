@@ -45,7 +45,7 @@ class BeamformControl(BlockControl):
         :type beam_id: int
 
         :param delays: Real-valued gains to load.  Should be a numpy array with
-            ``nbeam`` entries, where entry ``i`` corresponds to the delay to
+            ``ninput`` entries, where entry ``i`` corresponds to the gain to
             apply to the ``i``th beamformer input.
         :type delays: numpy.array
         
@@ -67,9 +67,8 @@ class BeamformControl(BlockControl):
         :type beam_id: int
 
         :param delays: Real-valued delays to load, specified in nanoseconds.
-            Should be a numpy array with ``nbeam`` entries,
-            where entry ``i`` corresponds to the delay to apply to the ``i``th
-            beamformer input.
+            Should be a numpy array with ``ninput`` entries, where entry ``i``
+            corresponds to the delay to apply to the ``i``th beamformer input.
         :type delays: numpy.array
 
         """
