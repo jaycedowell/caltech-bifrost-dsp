@@ -280,7 +280,7 @@ class BeamformOutput(Block):
                         socks[beam].close()
                         socks[beam].connect(Address(ip, port))
                     desc.set_chan0(chan0)
-                    desc.set_tuning(self.pipeline_idx)
+                    desc.set_tuning(1)
                     desc.set_nchan(nchan)
                     desc.set_decimation(upstream_acc_len) # Sets navg field
                     desc.set_nsrc(npipeline)

@@ -224,7 +224,7 @@ class BeamformVlbiOutput(Block):
             desc.set_nchan(nchan)
             desc.set_chan0(chan0)
             desc.set_nsrc(system_nchan // nchan)
-            desc.set_tuning(self.pipeline_idx)
+            desc.set_tuning(1)
             for ispan in iseq.read(igulp_size):
                 if ispan.size < igulp_size:
                     continue # ignore final gulp
