@@ -1,4 +1,5 @@
 NCHAN=96
+# TODO: Is this the right ordering for all of the servers?
 IFACE=(enp216s0 enp216s0 enp24s0 enp24s0)
 RXPORT=(10000 20000 10000 20000)
 GPU=(0 0 1 1)
