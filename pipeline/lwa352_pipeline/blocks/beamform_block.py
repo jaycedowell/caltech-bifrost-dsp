@@ -289,8 +289,8 @@ class Beamform(Block):
                        self.bf_delays[b] = np.array(v['data'])
                phases = 2*np.pi*self.bf_gains[b]*np.exp(1j*self.freqs[:, None]*self.bf_delays[b]*1e-9) # freq x pol
                self.gains_cpu[b] = phases * self.cal_gains
-           except KeyError:
-               self.log.error("BEAMFORM >> Failed to parse command")
+           except (KeyError, ValueError) as e:
+               self.log.error("BEAMFORM >> Failed to parse command: %s", str(e))
         self.update_stats(self.command_vals)
 
     def main(self):
