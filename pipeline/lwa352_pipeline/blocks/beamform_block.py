@@ -252,13 +252,43 @@ class Beamform(Block):
         # immediately (i.e, update_command_vals() should be run) in order
         # for newer commands not to overwrite older ones
         cpu_affinity.set_core(self.core)
-        self.acquire_control_lock()
+        try:
+            lag = self.pipeline_lag
+        except AttributeError:
+            lag = 0.0
+            
+        # Sort the pending events into lists of what can be done now
+        # and what we need to wait to implement.
+        now, later = [], []
         for event in watchresponse.events:
             v = json.loads(event.value)
+            try:
+                when = v['when']
+            except KeyError:
+                when = 0
+            if time.time() - lag < when:
+                later.append(v)
+            else:
+                now.append(v)
+                
+        # Process everything that can be done now
+        self.acquire_control_lock()
+        for v in now:
             self.update_stats({'last_cmd_response':self._process_commands(v)})
             self.update_command_vals()
         self.release_control_lock()
-
+        
+        # Process everything that we need to wait on in order of when it
+        # should happen
+        later.sort(key=lambda v: v['when'])
+        for v in later:
+            while time.time() - lag < v['when']:
+                time.sleep(0.05)
+            self.acquire_control_lock()
+            self.update_stats({'last_cmd_response':self._process_commands(v)})
+            self.update_command_vals()
+            self.release_control_lock()
+            
     def update_command_vals(self):
         """
         Copy command entries from the ``_pending_command_vals``
@@ -323,6 +353,7 @@ class Beamform(Block):
                 assert nchan == self.nchan
                 assert self.ninput == nstand * npol
                 self.freqs = np.arange(sfreq, sfreq+nchan*chan_bw, chan_bw)
+                self.pipeline_lag = time.time() - iseq.time_tag / bw_hz
                 
                 oshape = (self.ntime_gulp,nchan,self.nbeam*2)
                 
